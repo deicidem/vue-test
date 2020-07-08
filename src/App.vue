@@ -1,5 +1,10 @@
 <template>
 <div class="container">
+  <div class="progress">
+    <div class="progress-bar" role="progressbar" :style="width"></div>
+  </div>
+  <hr>
+  
   <component :is="item.type" v-show="index == progress" v-for="(item, index) in quests" :title="item.title" :answers="item.answers" :key="index" @submit="onSubmit(index, $event)"></component>
   <div class="result" v-show="progress == quests.length">
     <h2>Итого</h2>
@@ -30,8 +35,10 @@
 </div>
 </template>
 
-<style>
-  
+<style scoped>
+  .container {
+    padding: 15px;
+  }
 </style>
 
 <script>
@@ -111,6 +118,15 @@ export default {
 
       this.result[index].answer = result;
       this.progress++;
+    }
+  },
+  computed: {
+    width() {
+      console.log(this.progress / this.quests.length * 100);
+
+      return {
+        width: this.progress / this.quests.length * 100 + '%'
+      }
     }
   }
 }
