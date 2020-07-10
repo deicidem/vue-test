@@ -4,9 +4,13 @@
     <div class="progress-bar" role="progressbar" :style="width"></div>
   </div>
   <hr>
-  
-  <component :is="item.type" v-show="index == progress" v-for="(item, index) in quests" :title="item.title" :answers="item.answers" :key="index" @submit="onSubmit(index, $event)"></component>
-  <div class="result" v-show="progress == quests.length">
+  <transition name="fade" mode="out-in" key="quiz">
+  <div v-if="progress != quests.length">
+  <transition-group  name="fade" mode="out-in">
+    <component :is="item.type" class="question" v-show="index == progress"  v-for="(item, index) in quests" :title="item.title" :answers="item.answers" :key="item.title" @submit="onSubmit(index, $event)"></component>
+  </transition-group>
+  </div>
+  <div class="result" key="result" v-else>
     <h2>Итого</h2>
     <hr>
     <table class="table table-bordered">
@@ -32,13 +36,35 @@
 
     </table>
   </div>
+  </transition>
 </div>
 </template>
 
 <style scoped>
-  .container {
-    padding: 15px;
-  }
+.container {
+  padding: 15px;
+}
+.question {
+  position: absolute;
+}
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active{
+  transition: opacity 0.5s;
+}
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-leave-to {
+  opacity: 0;
+}
+.question.fade-enter-active {
+  transition-delay: .5s;
+}
+/* .fade-leave-active{
+  transition: opacity 1s;
+} */
 </style>
 
 <script>
@@ -122,8 +148,6 @@ export default {
   },
   computed: {
     width() {
-      console.log(this.progress / this.quests.length * 100);
-
       return {
         width: this.progress / this.quests.length * 100 + '%'
       }
